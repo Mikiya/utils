@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+
+import sys
+import re
+import string
+
+class Zone(object):
+    def __init__(self, text):
+        self.field = {}
+        r = re.compile('([a-z_]+)\s+(\d+)')  # XXX: skip coloned lines
+
+        for line in text.split('\n'):
+            m = r.search(line)
+            if m:
+                self.field[m.group(1)] = string.atoi(m.group(2))
+    
+
+def convert_kB(num):
+    return num * 4
+
+def main():
+    puts = sys.stdout.write
+
+    conv = convert_kB
+    labels = ['Node', 'total', 'free', 'anon', 'pagecache', ]
+    fields =         ['present', 'free', 'nr_anon_pages', 'nr_file_pages', ]
+
+
+    text = file('/proc/zoneinfo').read()
+    r = re.compile('Node (\d), zone\s+(\w+)')
+    z = r.split(text)[1:]  # ['0','DMA', '\ndadada....', '0', 'DMA32', '\ndata...', ..]
+
+    zonelist = [[string.atoi(z[i]), z[i+1], Zone(z[i+2])] for i in range(0, len(z), 3)]
+    
+    lastnode = zonelist[-1][0]
+    total = [[0] * len(fields) for i in range(lastnode+1)]
+
+    for zone in zonelist:
+        for i in range(len(fields)):
+            total[zone[0]][i] += zone[2].field[fields[i]]
+
+    for l in labels:
+        puts(str(l) + '\t')
+    sys.stdout.write('\n')
+        
+    for node_id in range(lastnode + 1):
+        puts(str(node_id) + '\t')
+        
+        for field in total[node_id]:
+            puts(str(conv(field)))
+            puts('\t')
+        sys.stdout.write('\n')
+    
+
+
+if __name__ == '__main__':
+    main()

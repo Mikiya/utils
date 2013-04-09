@@ -1,0 +1,14 @@
+I think 'free' command in recent linux is not good.
+
+free should ..
+- consider numa node
+- not separate buffer/cache
+- not plus/minus buffer&cache
+
+
+zfree is a small script. 
+It reads /proc/zoneinfo and summalize it.
+
+
+This is not tested in numa env, yet.
+
