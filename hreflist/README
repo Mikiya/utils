@@ -1,0 +1,6 @@
+pick up href= referenced urls from HTML input
+
+use case:
+A book is publicly available by separated PDFs...
+wget -O- http://www.example.com/abook.html | hreflist | grep pdf | xargs wget
+

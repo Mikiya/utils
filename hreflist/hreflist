@@ -1,0 +1,13 @@
+#! /usr/bin/perl
+
+$html = "";
+while (<>) {
+  $html .= $_;
+}
+
+$html =~ s/^([^<]*)</</g;
+$html =~ s/>[^<]*</></g;
+$html =~ s/<[^>]*\shref\s*\=\s*\"?([^\"]+)\"?[^>]*>/$1\n/ig;
+$html =~ s/<[^>]*>//g;
+
+print $html;
